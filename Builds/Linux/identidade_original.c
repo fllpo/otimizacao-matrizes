@@ -3,27 +3,35 @@
 
 int verificarIdentidade(FILE *matriz, int tamanhoMatriz)
 {
-    int A[tamanhoMatriz][tamanhoMatriz];
+    float **A = malloc(tamanhoMatriz * sizeof(int *));
+    int i, j;
 
-    for (int i = 0; i < tamanhoMatriz; i++)
+    for (i = 0; i < tamanhoMatriz; i++)
     {
-        for (int j = 0; j < tamanhoMatriz; j++)
+        *(A + i) = malloc(tamanhoMatriz * sizeof(int));
+        for (j = 0; j < tamanhoMatriz; j++)
         {
-            fscanf(matriz, "%d", &A[i][j]);
+            fscanf(matriz, "%f", &A[i][j]);
         }
     }
 
-    for (int i = 0; i < tamanhoMatriz; i++)
+    for (i = 0; i < tamanhoMatriz; i++)
     {
-        for (int j = 0; j < tamanhoMatriz; j++)
+        for (j = 0; j < tamanhoMatriz; j++)
         {
-            if ((i == j && A[i][j] != 1))
+            if (i == j)
             {
-                return 0;
+                if (A[i][j] != 1)
+                {
+                    return 0;
+                }
             }
-            else if ((i != j && A[i][j] != 0))
+            else if (i != j)
             {
-                return 0;
+                if (A[i][j] != 0)
+                {
+                    return 0;
+                }
             }
         }
     }
@@ -38,15 +46,12 @@ int main(int argc, char *argv[])
     FILE *matriz;
     matriz = fopen("txt/matrizIdentidade.txt", "r");
 
-
-    if (verificarIdentidade(matriz, tamanhoMatriz) == 1)
+    if (verificarIdentidade(matriz, tamanhoMatriz))
     {
         printf("Verdadeiro\n");
     }
-    else if (verificarIdentidade(matriz, tamanhoMatriz) == 0)
-    {
+    else
         printf("Falso\n");
-    }
 
     fclose(matriz);
 

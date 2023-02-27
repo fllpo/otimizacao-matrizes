@@ -1,18 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 void multiplicarMatrizes(FILE *matrizA, FILE *matrizB, FILE *matrizC, int tamanhoMatriz)
 {
-    int A[tamanhoMatriz][tamanhoMatriz], B[tamanhoMatriz][tamanhoMatriz], C = 0;
+    float **A = malloc(tamanhoMatriz * sizeof(float *)), **B = malloc(tamanhoMatriz * sizeof(float *)), C = 0;
     int i, j, k;
 
     for (i = 0; i < tamanhoMatriz; i++)
     {
+        *(A + i) = malloc(tamanhoMatriz * sizeof(float));
+        *(B + i) = malloc(tamanhoMatriz * sizeof(float));
+
         for (j = 0; j < tamanhoMatriz; j++)
         {
-            fscanf(matrizA, "%d", &A[i][j]);
-            fscanf(matrizB, "%d", &B[i][j]);
+            fscanf(matrizA, "%f", &A[i][j]);
+            fscanf(matrizB, "%f", &B[i][j]);
         }
     }
 
@@ -22,9 +24,9 @@ void multiplicarMatrizes(FILE *matrizA, FILE *matrizB, FILE *matrizC, int tamanh
         {
             for (k = 0; k < tamanhoMatriz; k++)
             {
-                C += A[i][k] * B[k][j];
+                C = C + A[i][k] * B[k][j];
             }
-            fprintf(matrizC, "%d ", C);
+            fprintf(matrizC, "%f ", C);
             C = 0;
         }
 
@@ -44,7 +46,7 @@ int main(int argc, char *argv[])
     FILE *matrizA, *matrizB, *matrizC;
     matrizA = fopen("txt/matrizA.txt", "r");
     matrizB = fopen("txt/matrizB.txt", "r");
-    matrizC = fopen("txt/matrizC.txt", "w");
+    matrizC = fopen("txt/matrizC_original.txt", "w");
 
     multiplicarMatrizes(matrizA, matrizB, matrizC, tamanhoMatriz);
 
