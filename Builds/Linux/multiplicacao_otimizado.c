@@ -1,63 +1,68 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <immintrin.h>
+#define ALIGN 32
 
-int atoi_tamMatriz(const char *string)
+void multiplicacao(FILE *matrizA, FILE *matrizBTransposta, FILE *matrizC, int tamanhoMatriz) // multiplica A pela transposta de B
 {
-    int valor = 0;
-    while (*string)
+    float *A = aligned_alloc(ALIGN, tamanhoMatriz * tamanhoMatriz * sizeof(float)),
+          *B = aligned_alloc(ALIGN, tamanhoMatriz * tamanhoMatriz * sizeof(float)),
+          *C = aligned_alloc(ALIGN, tamanhoMatriz * tamanhoMatriz * sizeof(float));
+
+    __m256 _A, _B, _resultado256;                                // 8x float
+    __m128 _segundaMetade128, _primeiraMetade128, _resultado128; // 4x float
+
+    for (int i = 0; i < tamanhoMatriz * tamanhoMatriz; i++)
     {
-        valor = valor * 10 + (*string++ - '0');
-    }
-    return valor;
-}
-
-void multiplicarMatrizes(FILE *matrizA, FILE *matrizB, FILE *matrizC, int tamanhoMatriz)
-{
-/*
-    int linha = tamanhoMatriz, coluna = tamanhoMatriz, **A = malloc(linha * sizeof(int *)), **B = malloc(linha * sizeof(int *)), C = 0;
-
-    for (int i = 0; i < linha; i++)
-    {
-        *(A + i) = malloc(coluna * sizeof(int));
-        *(B + i) = malloc(coluna * sizeof(int));
-
-        for (int j = 0; j < coluna; j++)
-        {
-            fscanf(matrizA, "%d", (*(A + i) + j));
-            fscanf(matrizB, "%d", (*(B + i) + j));
-        }
+        fscanf(matrizA, "%f", &A[i]);
+        fscanf(matrizBTransposta, "%f", &B[i]);
     }
 
     for (int i = 0; i < tamanhoMatriz; i++)
     {
         for (int j = 0; j < tamanhoMatriz; j++)
         {
-            for (int k = 0; k < tamanhoMatriz; k++)
+            C[(i * tamanhoMatriz) + j] = 0;
+            for (int k = 0; k < tamanhoMatriz; k += 8)
             {
-                C += (*(*(A + i) + k)) * (*(*(B + k) + j)); // uso de +=
+                // carrega 8 floats nos registradores
+                _A = _mm256_loadu_ps(A + (i * tamanhoMatriz) + k); // A[i][k]
+                _B = _mm256_loadu_ps(B + (j * tamanhoMatriz) + k); // B[j][k]
+
+                // multiplica _A e _B
+                _resultado256 = _mm256_mul_ps(_A, _B);
+
+                // extrai primeira metade do vetor _resultado256
+                _primeiraMetade128 = _mm256_extractf128_ps(_resultado256, 0);
+                // extrai segunda metade do vetor _resultado256
+                _segundaMetade128 = _mm256_extractf128_ps(_resultado256, 1);
+
+                // sequencia de somas
+                _resultado128 = _mm_add_ps(_primeiraMetade128, _segundaMetade128);
+                _resultado128 = _mm_hadd_ps(_resultado128, _resultado128);
+                _resultado128 = _mm_hadd_ps(_resultado128, _resultado128);
+
+                // armazena e C[i][j]
+                C[(i * tamanhoMatriz) + j] += _mm_cvtss_f32(_resultado128);
             }
-            fprintf(matrizC, "%d ", C);
-            C = 0;
+            fprintf(matrizC, "%.1f ", C[(i * tamanhoMatriz) + j]);
         }
         fprintf(matrizC, "\n");
     }
-*/
-   
 }
 
 int main(int argc, char *argv[])
 {
+    int tamanhoMatriz = atoi(argv[1]); // multiplos de 8
 
-    FILE *matrizA, *matrizB, *matrizC;
-    matrizA = fopen("txt/matrizA.txt", "r");
-    matrizB = fopen("txt/matrizB.txt", "r");
-    matrizC = fopen("txt/matrizC.txt", "w");
+    FILE *matrizA = fopen("txt/matrizA.txt", "r"),
+         *matrizBTransposta = fopen("txt/matrizBTransposta.txt", "r"),
+         *matrizC = fopen("txt/matrizC_otimizado.txt", "w");
 
-    multiplicarMatrizes(matrizA, matrizB, matrizC, atoi_tamMatriz(argv[1]));
+    multiplicacao(matrizA, matrizBTransposta, matrizC, tamanhoMatriz);
 
     fclose(matrizA);
-    fclose(matrizB);
+    fclose(matrizBTransposta);
     fclose(matrizC);
 
     return 0;

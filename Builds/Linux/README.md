@@ -1,3 +1,1 @@
-# Otimização de matrizes
-###### Passe o tamanho da matriz quadrada por parâmetro<br>Ex.:100
-`./script.sh 100`
+##### utilize `./script.sh` para rodar em matrizes 1024x1024, 2048x2048 e 4096x4096

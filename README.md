@@ -1,3 +1,3 @@
-# Otimização de operações com matrizes
-
-use `./teste_script.h` para rodar testeAVX.c
+# Otimização de matrizes
+### Verificação de matriz identidade e multiplicação de matrizes
+#### Implementação escalar Vs. Implementação com funções intrínsecas
