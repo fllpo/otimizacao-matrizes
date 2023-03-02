@@ -36,6 +36,7 @@ int verificarIdentidade(FILE *matriz, int tamanhoMatriz)
         }
     }
     return 1;
+    free(A);
 }
 
 int main(int argc, char *argv[])

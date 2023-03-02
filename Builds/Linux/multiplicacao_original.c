@@ -26,16 +26,15 @@ void multiplicarMatrizes(FILE *matrizA, FILE *matrizB, FILE *matrizC, int tamanh
             {
                 C = C + A[i][k] * B[k][j];
             }
-            fprintf(matrizC, "%f ", C);
+            fprintf(matrizC, "%.1f ", C);
             C = 0;
         }
 
         fprintf(matrizC, "\n");
     }
 
-    fclose(matrizA);
-    fclose(matrizB);
-    fclose(matrizC);
+    free(A);
+    free(B);
 }
 
 int main(int argc, char *argv[])
@@ -43,12 +42,15 @@ int main(int argc, char *argv[])
 
     int tamanhoMatriz = atoi(argv[1]);
 
-    FILE *matrizA, *matrizB, *matrizC;
-    matrizA = fopen("txt/matrizA.txt", "r");
-    matrizB = fopen("txt/matrizB.txt", "r");
-    matrizC = fopen("txt/matrizC_original.txt", "w");
+    FILE *matrizA = fopen("txt/matrizA.txt", "r"),
+         *matrizB = fopen("txt/matrizB.txt", "r"),
+         *matrizC = fopen("txt/matrizC_original.txt", "w");
 
     multiplicarMatrizes(matrizA, matrizB, matrizC, tamanhoMatriz);
+
+    fclose(matrizA);
+    fclose(matrizB);
+    fclose(matrizC);
 
     return 0;
 }

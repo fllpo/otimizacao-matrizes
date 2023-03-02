@@ -1,10 +1,9 @@
-
 gcc -o geraArquivos geraArquivos.c
 
-#gcc -o identidade_original identidade_original.c -O0
+gcc -o identidade_original identidade_original.c -O0
 gcc -o multiplicacao_original multiplicacao_original.c -O0
 
-#gcc -o identidade_otimizado identidade_otimizado.c -O0
+gcc -mavx -o identidade_otimizado identidade_otimizado.c -O4
 gcc -mavx -o multiplicacao_otimizado multiplicacao_otimizado.c -O4
 
 if [ $? -eq 0 ];then 
@@ -34,7 +33,7 @@ if [ $? -eq 0 ];then
 
    echo "Gerando matrizes 2048x2048"
    ./geraArquivos 2048
-   #echo "OK"
+   echo "OK"
 
    echo "---Programas originais---"
    
@@ -73,7 +72,7 @@ if [ $? -eq 0 ];then
 
    echo -e "\nMultiplicação de matrizes"
    time ./multiplicacao_otimizado 4096
-   
+
 else
    echo "Erro de compilação"
 fi
