@@ -3,8 +3,8 @@ gcc -o geraArquivos geraArquivos.c
 gcc -o identidade_original identidade_original.c -O0
 gcc -o multiplicacao_original multiplicacao_original.c -O0
 
-gcc -mavx -o identidade_otimizado identidade_otimizado.c -O4
-gcc -mavx -o multiplicacao_otimizado multiplicacao_otimizado.c -O4
+gcc -mavx -o identidade_otimizado identidade_otimizado.c -O3
+gcc -mavx -o multiplicacao_otimizado multiplicacao_otimizado.c -O3
 
 if [ $? -eq 0 ];then 
 
